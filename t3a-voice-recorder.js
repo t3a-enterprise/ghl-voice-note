@@ -18,25 +18,27 @@
 
   // Marca SÍNCRONA — antes de qualquer await. Impede dupla execução do loader.
   if (window.__T3A_VOICE__) return;
-  window.__T3A_VOICE__ = { version: "1.1.0", bootedAt: Date.now() };
+  window.__T3A_VOICE__ = { version: "1.2.0", bootedAt: Date.now() };
 
   // ==================================================================
   // CONFIG
   // ==================================================================
   var CFG = {
-    // Sub-accounts liberadas. Vazio = NENHUMA (fail-closed).
+    // OPT-OUT: por padrão o microfone vale para TODAS as sub-accounts —
+    // cliente novo já nasce com ele. Quem desliga é o `blocked` do config.json.
     //
-    // A lista NÃO mora aqui: este arquivo é público (exigência do GitHub Pages)
-    // e IDs de sub-account são dado de cliente. Ela é declarada no Custom JS
-    // dentro do GHL, que é privado:
+    // Modo opcional de rollout restrito: declarar a lista no Custom JS do GHL
+    // (que é privado — este arquivo é público e ID de sub-account é dado de
+    // cliente) faz o script atender SÓ aquelas sub-accounts:
     //
-    //   <script>window.__T3A_VOICE_LOCATIONS__ = ["abc123","def456"];</script>
-    //   <script async src=".../t3a-voice-recorder.js"></script>
+    //   <script>window.__T3A_VOICE_LOCATIONS__ = ["abc123"];</script>
     //
-    // Pegar o ID na URL: /v2/location/<ESTE_PEDACO>/conversations/...
-    allowedLocations: Array.isArray(window.__T3A_VOICE_LOCATIONS__)
+    // Lista ausente ou vazia = todas. Pegar o ID na URL:
+    // /v2/location/<ESTE_PEDACO>/conversations/...
+    allowedLocations: (Array.isArray(window.__T3A_VOICE_LOCATIONS__) &&
+                       window.__T3A_VOICE_LOCATIONS__.length)
       ? window.__T3A_VOICE_LOCATIONS__
-      : [],
+      : null,
 
     killSwitchUrl: "https://t3a-enterprise.github.io/ghl-voice-note/config.json",
     killSwitchTimeoutMs: 4000,
@@ -621,7 +623,8 @@
   // ==================================================================
   function locationAllowed() {
     var id = currentLocationId();
-    if (!id) return false;
+    if (!id) return false;                       // fora de uma sub-account
+    if (!CFG.allowedLocations) return true;      // opt-out: todas
     return CFG.allowedLocations.indexOf(id) !== -1;
   }
 

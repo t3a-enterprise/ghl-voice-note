@@ -10,14 +10,26 @@ Vanilla JS, sem build, sem dependência.
 `Settings → Company → aba Whitelabel → Custom JavaScript`:
 
 ```html
-<script>window.__T3A_VOICE_LOCATIONS__ = ["SUA_LOCATION_ID"];</script>
 <script async src="https://t3a-enterprise.github.io/ghl-voice-note/t3a-voice-recorder.js"></script>
 ```
 
 O `async` é obrigatório: sem ele, uma lentidão neste host deixaria o GHL lento
 para todas as sub-accounts.
 
-O `location_id` sai da URL: `/v2/location/<ESTE_PEDACO>/conversations/...`
+Vale para **todas** as sub-accounts por padrão — sub-account nova já nasce com o
+botão. Para desligar em alguma, use `blocked` no `config.json`.
+
+### Rollout restrito (opcional)
+
+Para atender só algumas sub-accounts, declare a lista antes do script:
+
+```html
+<script>window.__T3A_VOICE_LOCATIONS__ = ["abc123","def456"];</script>
+<script async src="https://t3a-enterprise.github.io/ghl-voice-note/t3a-voice-recorder.js"></script>
+```
+
+Lista ausente ou vazia = todas. O `location_id` sai da URL:
+`/v2/location/<ESTE_PEDACO>/conversations/...`
 
 ## Kill switch
 
@@ -35,7 +47,7 @@ O `location_id` sai da URL: `/v2/location/<ESTE_PEDACO>/conversations/...`
 
 O botão só aparece quando **todas** as condições valem:
 
-1. O `location_id` da URL está em `__T3A_VOICE_LOCATIONS__`
+1. Existe um `location_id` na URL, e ele passa no rollout restrito (se houver)
 2. `config.json` responde com `enabled: true`
 3. O `location_id` não está em `blocked`
 4. O composer e o input de anexo existem na página
