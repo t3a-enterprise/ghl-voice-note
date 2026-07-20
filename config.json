@@ -1,0 +1,5 @@
+{
+  "enabled": false,
+  "blocked": [],
+  "_comment": "KILL SWITCH. Nasce DESLIGADO de proposito: o script entra no Custom JS do GHL inerte, confirma-se que nada mudou, e so entao liga aqui. enabled=false desliga o botao em TODOS os clientes em ate 15min (ou no proximo reload da aba). blocked = lista de location_ids a desligar individualmente. Se este arquivo ficar fora do ar, o script assume DESLIGADO (fail-closed)."
+}
